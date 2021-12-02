@@ -2,8 +2,10 @@ const fs = require('fs');
 
 import { increasingMeasurements, increasingMeasurementsSlidingWindows } from "./sonar-sweep";
 
-describe('sonar sweep', () => {
+describe('day1 - sonar sweep', () => {
+
   describe('part 1 - single measurements', () => {
+
     test('returns zero for empty measurements', () => {
       expect(increasingMeasurements([])).toEqual(0);
     });
@@ -36,6 +38,7 @@ describe('sonar sweep', () => {
   });
 
   describe('part 2 - using sliding windows', () => {
+
     test('returns zero if number of measurements is less than 4', () => {
       expect(increasingMeasurementsSlidingWindows([1])).toEqual(0);
       expect(increasingMeasurementsSlidingWindows([1, 2])).toEqual(0);
