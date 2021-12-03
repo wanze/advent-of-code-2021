@@ -8,18 +8,9 @@ export function checkPowerConsumption(report: string[]): number {
   let epsilonRate = '';
 
   for (let bitIndex = 0; bitIndex < nBits; bitIndex++) {
-    let zeroBitsCount = 0;
-    let oneBitsCount = 0;
+    const [zeroCount, oneCount] = countZeroOneBitsAtIndex(report, bitIndex);
 
-    report.forEach((binaryNumber) => {
-      if (binaryNumber[bitIndex] === '1') {
-        oneBitsCount++;
-      } else if (binaryNumber[bitIndex] === '0') {
-        zeroBitsCount++;
-      }
-    });
-
-    if (oneBitsCount > zeroBitsCount) {
+    if (zeroCount > oneCount) {
       gammaRate += '1';
       epsilonRate += '0';
     } else {
@@ -28,7 +19,7 @@ export function checkPowerConsumption(report: string[]): number {
     }
   }
 
-  return parseInt(gammaRate, 2) * parseInt(epsilonRate, 2);
+  return binaryToDecimal(gammaRate) * binaryToDecimal(epsilonRate);
 }
 
 export function lifeSupportRating(report: string[]): number {
@@ -36,25 +27,36 @@ export function lifeSupportRating(report: string[]): number {
     return 0;
   }
 
-  const oxygenGeneratorRating = filter(report, 0, (binaryNumber, bitIndex, zeroCount, oneCount) => {
-    if (oneCount >= zeroCount) {
+  const oxygenGeneratorRating = getOxygenGeneratorRating();
+  const co2ScrubberRating = getCo2ScrubberRating();
+
+  return binaryToDecimal(oxygenGeneratorRating) * binaryToDecimal(co2ScrubberRating);
+
+  function getCo2ScrubberRating() {
+    const filtered = filterRecursive(report, 0, (binaryNumber, bitIndex, zeroCount, oneCount) => {
+      if (zeroCount <= oneCount) {
+        return binaryNumber[bitIndex] === '0';
+      }
+
       return binaryNumber[bitIndex] === '1';
-    }
+    });
 
-    return binaryNumber[bitIndex] === '0';
-  });
+    return filtered[0];
+  }
 
-  const co2ScrubberRating = filter(report, 0, (binaryNumber, bitIndex, zeroCount, oneCount) => {
-    if (zeroCount <= oneCount) {
+  function getOxygenGeneratorRating() {
+    const filtered = filterRecursive(report, 0, (binaryNumber, bitIndex, zeroCount, oneCount) => {
+      if (oneCount >= zeroCount) {
+        return binaryNumber[bitIndex] === '1';
+      }
+
       return binaryNumber[bitIndex] === '0';
-    }
+    });
 
-    return binaryNumber[bitIndex] === '1';
-  });
+    return filtered[0];
+  }
 
-  return parseInt(oxygenGeneratorRating[0], 2) * parseInt(co2ScrubberRating[0], 2);
-
-  function filter(
+  function filterRecursive(
     binaryNumbers: string[],
     bitIndex: number,
     filterPredicate: (binaryNumber: string, bitIndex: number, zeroCount: number, oneCount: number) => boolean): string[]
@@ -69,21 +71,31 @@ export function lifeSupportRating(report: string[]): number {
       throw Error(`Bit index "${bitIndex}" greater than number of bits (${nBits})!`);
     }
 
-    let zeroCount = 0;
-    let oneCount = 0;
-
-    binaryNumbers.forEach((binaryNumber) => {
-      if (binaryNumber[bitIndex] === '1') {
-        oneCount++;
-      } else if (binaryNumber[bitIndex] === '0') {
-        zeroCount++;
-      }
-    });
+    const [zeroCount, oneCount] = countZeroOneBitsAtIndex(binaryNumbers, bitIndex);
 
     const filtered = binaryNumbers.filter(
       (binaryNumber) => filterPredicate(binaryNumber, bitIndex, zeroCount, oneCount)
     );
 
-    return filter(filtered, ++bitIndex, filterPredicate);
+    return filterRecursive(filtered, ++bitIndex, filterPredicate);
   }
+}
+
+function binaryToDecimal(binary: string): number {
+  return parseInt(binary, 2);
+}
+
+function countZeroOneBitsAtIndex(binaryNumbers: string[], bitIndex: number): [number, number] {
+  let zeroCount = 0;
+  let oneCount = 0;
+
+  binaryNumbers.forEach((binaryNumber) => {
+    if (binaryNumber[bitIndex] === '1') {
+      oneCount++;
+    } else if (binaryNumber[bitIndex] === '0') {
+      zeroCount++;
+    }
+  });
+
+  return [zeroCount, oneCount];
 }
