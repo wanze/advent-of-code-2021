@@ -1,13 +1,13 @@
 const fs = require('fs');
 
-import {numberOfLanternFishNaive} from "./lanternfish";
+import {numberOfLanternFish, numberOfLanternFishNaive} from "./lanternfish";
 
 describe('day6 - lanternfish', () => {
 
   describe('part 1', () => {
 
     test('example from exercise', () => {
-      expect(numberOfLanternFishNaive([3, 4, 3, 1, 2], 18)).toEqual(26);
+      expect(numberOfLanternFish([3, 4, 3, 1, 2], 18)).toEqual(26);
     });
 
     test('puzzle input', () => {
@@ -19,12 +19,12 @@ describe('day6 - lanternfish', () => {
   describe('part 2', () => {
 
     test('example from exercise', () => {
-      expect(numberOfLanternFishNaive([3, 4, 3, 1, 2], 256)).toEqual(26984457539);
+      expect(numberOfLanternFish([3, 4, 3, 1, 2], 256)).toEqual(26984457539);
     });
 
     test('puzzle input', () => {
       const input = parseInput();
-      expect(numberOfLanternFishNaive(input, 80)).toEqual(0);
+      expect(numberOfLanternFish(input, 256)).toEqual(1609314870967);
     });
   });
 
