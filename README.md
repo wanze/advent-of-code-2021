@@ -28,6 +28,8 @@ Each exercise in the `./src` folder contains one file with the tests and one fil
 * [Day 9](https://adventofcode.com/2021/day/9) - Smoke Basin ⭐
 * [Day 10](https://adventofcode.com/2021/day/10) - Syntax Scoring ⭐⭐
 * [Day 11](https://adventofcode.com/2021/day/11) - Dumbo Octopus ⭐⭐
+* [Day 12](https://adventofcode.com/2021/day/12) - Passage Pathing ⭐⭐
+* [Day 13](https://adventofcode.com/2021/day/13) - Transparent Origami ⭐⭐
 
 ---
 
