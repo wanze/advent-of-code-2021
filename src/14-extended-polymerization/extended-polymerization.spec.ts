@@ -1,4 +1,4 @@
-import {getPolymer, leastMostCommonPolymerElements, Rule} from "./extended-polymerization";
+import {polymerString, leastMostCommonPolymerElements, polymerCounts, Rule} from "./extended-polymerization";
 
 const fs = require('fs');
 
@@ -6,9 +6,16 @@ describe('day14 - extended polymerization', () => {
 
   describe('part 1', () => {
 
-    test('example polymer from exercise', () => {
+    test('polymer from example', () => {
       const { template, rules } = parseExampleInput();
-      expect(getPolymer(template, rules, 4)).toEqual('NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB');
+      expect(polymerString(template, rules, 4)).toEqual('NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB');
+    });
+
+    test('polymer counts from example', () => {
+      const { template, rules } = parseExampleInput();
+      expect(polymerCounts(template, rules, 1)).toEqual({ 'N': 2, 'C': 2, 'B': 2, 'H': 1 });
+      expect(polymerCounts(template, rules, 2)).toEqual({ 'N': 2, 'C': 4, 'B': 6, 'H': 1 });
+      expect(polymerCounts(template, rules, 10)).toEqual({ 'N': 865, 'C': 298, 'B': 1749, 'H': 161 });
     });
 
     test('example from exercise', () => {
@@ -25,10 +32,16 @@ describe('day14 - extended polymerization', () => {
   });
 
   describe('part 2', () => {
+    test('example input', () => {
+      const { template, rules } = parseExampleInput();
+      const { least, most } = leastMostCommonPolymerElements(template, rules, 40);
+      expect(most - least).toEqual(2188189693529)
+    });
+
     test('puzzle input', () => {
       const { template, rules } = parsePuzzleInput();
       const { least, most } = leastMostCommonPolymerElements(template, rules, 40);
-      expect(most - least).toEqual(0)
+      expect(most - least).toEqual(2304722022017)
     });
   });
 

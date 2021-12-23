@@ -30,6 +30,7 @@ Each exercise in the `./src` folder contains one file with the tests and one fil
 * [Day 11](https://adventofcode.com/2021/day/11) - Dumbo Octopus ⭐⭐
 * [Day 12](https://adventofcode.com/2021/day/12) - Passage Pathing ⭐⭐
 * [Day 13](https://adventofcode.com/2021/day/13) - Transparent Origami ⭐⭐
+* [Day 14](https://adventofcode.com/2021/day/14) - Extended Polymerization ⭐⭐
 
 ---
 

@@ -3,45 +3,82 @@ export type Rule = {
   insertion: string;
 }
 
-export function leastMostCommonPolymerElements(template: string, rules: Rule[], steps: number): { least: number, most: number } {
-  const polymer = getPolymer(template, rules, steps);
-  const counts: { [element: string]: number } = {};
+export function polymerString(template: string, rules: Rule[], nSteps: number): string {
+  let polymer = template;
 
-  for (let i = 0; i < polymer.length; i++) {
-    const element = polymer[i];
-    counts[element] = counts[element] ? counts[element] + 1 : 1;
+  const replacements: { [pair: string]: string} = {};
+  rules.forEach((rule) => {
+    replacements[rule.pair] = rule.insertion;
+  });
+
+  for (let step = 0; step < nSteps; step++) {
+    let newPolymer = '';
+    for (let i = 0; i < polymer.length - 1; i++) {
+      const pair = polymer[i] + polymer[i + 1];
+      const replacement = replacements[pair] || '';
+      newPolymer += polymer[i] + replacement;
+    }
+    polymer = newPolymer + polymer[polymer.length - 1];
   }
 
-  let least = 1000000;
+  return polymer;
+}
+
+export function polymerCounts(template: string, rules: Rule[], nSteps: number): { [element: string]: number } {
+  const counts: { [element: string]: number } = {};
+  const replacements: { [pair: string]: string} = {};
+
+  rules.forEach((rule) => {
+    replacements[rule.pair] = rule.insertion;
+  });
+
+  let pairsCount: { [pair: string]: number } = {};
+
+  for (let i = 0; i < template.length - 1; i++) {
+    const pair = template[i] + template[i + 1];
+    pairsCount[pair] = pairsCount[pair] ? pairsCount[pair] + 1 : 1;
+  }
+
+  for (let step = 0; step < nSteps; step++) {
+    const newPairsCount: { [pair: string]: number } = {};
+    Object.keys(pairsCount).forEach((pair) => {
+      const replacement = replacements[pair];
+      if (replacement) {
+        const newPair1 = pair[0] + replacement;
+        const newPair2 = replacement + pair[1];
+        newPairsCount[newPair1] = newPairsCount[newPair1] ? newPairsCount[newPair1] + pairsCount[pair] : pairsCount[pair];
+        newPairsCount[newPair2] = newPairsCount[newPair2] ? newPairsCount[newPair2] + pairsCount[pair] : pairsCount[pair];
+      }
+    });
+    pairsCount = newPairsCount;
+  }
+
+  Object.keys(pairsCount).forEach((pair) => {
+    const firstElement = pair[0];
+    const count = pairsCount[pair];
+    counts[firstElement] = counts[firstElement] ? counts[firstElement] + count : count;
+  });
+  const lastElement = template[template.length - 1];
+  counts[lastElement] += 1;
+
+  return counts;
+}
+
+export function leastMostCommonPolymerElements(template: string, rules: Rule[], nSteps: number): { least: number, most: number } {
+  const counts = polymerCounts(template, rules, nSteps);
+
   let most = 0;
+  let least = null;
 
   Object.keys(counts).forEach((element) => {
     const count = counts[element];
     if (count > most) {
       most = count;
     }
-    if (count < least) {
+    if (least === null || count < least) {
       least = count;
     }
   });
 
   return { least, most };
-}
-
-export function getPolymer(template: string, rules: Rule[], steps: number): string {
-  let polymer = template;
-  for (let step = 0; step < steps; step++) {
-    let i = 0;
-    while (i < polymer.length - 1) {
-      const pair = `${polymer[i]}${polymer[i + 1]}`;
-      const rule = rules.find(rule => rule.pair === pair);
-      if (rule) {
-        polymer = polymer.substr(0, i + 1) + rule.insertion + polymer.substr(i + 1);
-        i++;
-      }
-      i++;
-    }
-  }
-
-  return polymer;
 }
